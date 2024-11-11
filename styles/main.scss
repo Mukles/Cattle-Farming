@@ -1,0 +1,18 @@
+@use "sass:meta";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @include meta.load-css("base.scss");
+}
+
+@layer components {
+  @include meta.load-css("common.scss");
+  @include meta.load-css("buttons.scss");
+  @include meta.load-css("navigation.scss");
+}
+
+@layer utilities {
+  @include meta.load-css("utilities.scss");
+}

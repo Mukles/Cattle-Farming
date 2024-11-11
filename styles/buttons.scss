@@ -1,0 +1,13 @@
+.btn {
+  &-outline {
+    @apply transition-all duration-200;
+
+    &::before {
+      @apply outline-gradient pointer-events-none absolute -inset-[1px] rounded-3xl transition-opacity duration-200 content-[''];
+    }
+
+    &::after {
+      @apply pointer-events-none absolute inset-0 rounded-3xl bg-white content-[''] dark:bg-background;
+    }
+  }
+}

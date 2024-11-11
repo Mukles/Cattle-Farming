@@ -4,16 +4,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import Image from "next/image";
 import Link from "next/link";
 import { sidebarMenu } from "./data/menu";
 export default function Sidebar({ children }: { children?: React.ReactNode }) {
   return (
     <div className="h-full overflow-auto px-5 pt-8 relative">
       <div className="mb-7">
-        <Link href="/">
-          <Image src={"/images/Logo.png"} alt="logo" width={154} height={32} />
-        </Link>
+        <h2>Cattle Mangement</h2>
       </div>
 
       <nav className="grid gap-y-6">
