@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { sidebarMenu } from "./data/menu";
 export default function Sidebar({ children }: { children?: React.ReactNode }) {
@@ -22,7 +23,7 @@ export default function Sidebar({ children }: { children?: React.ReactNode }) {
               </div>
               <Accordion type="single" collapsible className="w-full">
                 {menu.children.map((menu) => {
-                  const Icon = menu.icon;
+                  const Icon = menu.icon!;
                   return (
                     <AccordionItem
                       key={menu.name}
@@ -30,7 +31,12 @@ export default function Sidebar({ children }: { children?: React.ReactNode }) {
                       value={menu.name}
                       className="border-b-0"
                     >
-                      <AccordionTrigger className="text-primary hover:no-underline font-medium py-2 px-3 text-sm">
+                      <AccordionTrigger
+                        className={cn(
+                          "text-primary hover:no-underline font-medium py-2 px-3 text-sm",
+                          !menu.children?.length && "[&>svg]:hidden"
+                        )}
+                      >
                         <>
                           <span>
                             <Icon className="size-6 mr-3" />
