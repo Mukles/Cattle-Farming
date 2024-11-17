@@ -1,4 +1,13 @@
-import { Cat, LayoutDashboard } from "lucide-react";
+import {
+  Cat,
+  ClipboardList,
+  DollarSign,
+  Heart,
+  LayoutDashboard,
+  Package,
+  PlusSquare,
+  ShoppingCart,
+} from "lucide-react";
 
 // Define a type for the basic menu item structure
 interface MenuItem {
@@ -30,68 +39,80 @@ interface SubMenuItem {
 
 // Dashboard Menu
 export const dashboardMenu: DashboardMenuItem[] = [
-  { name: "Profile Settings", url: "/dashboard/profile" },
-  { name: "Download History", url: "/dashboard/downloads" },
-  { name: "Billing Information", url: "/dashboard/billing" },
-  { name: "Support Tickets", url: "/dashboard/tickets" },
-  { name: "Team Members", url: "/dashboard/members" },
-  { name: "Access Token", url: "/dashboard/access-token" },
+  { name: "Overview", url: "/dashboard/overview" },
 ];
 
-// Main Menu Items with Nested Support and Dashboard Menus
-const menuItems = {
-  dashboard: [
-    { url: "/ecommerce", name: "Ecommerce" },
-    { url: "/analytics", name: "Analytics" },
-    { url: "/marketing", name: "Marketing" },
-    { url: "/crm", name: "CRM" },
-    { url: "/stocks", name: "Stocks", tag: "new" },
-  ] as MenuItem[],
-  support: [
-    { url: "/help", name: "Help" },
-    { url: "/faq", name: "FAQ" },
-  ] as MenuItem[],
-};
+// Income Menu
+export const incomeMenu: DashboardMenuItem[] = [
+  { name: "View All", url: "/income" },
+  { name: "Add Income", url: "/income/add" },
+];
 
-// Sidebar Menu with Nested Menu Items and Icons
+// Expense Menu
+export const expenseMenu: DashboardMenuItem[] = [
+  { name: "View All", url: "/expense" },
+  { name: "Add Expense", url: "/expense/add" },
+];
+
+// Sidebar Menu with Relevant Icons
 export const sidebarMenu: SidebarMenuItem[] = [
   {
-    label: "MENU",
-    name: "menu",
+    label: "Dashboard",
+    name: "dashboard",
     children: [
       {
-        name: "Dashboard",
-        icon: Cat,
-        children: menuItems.dashboard,
-      },
-      {
-        name: "Calendar",
+        name: "Overview",
+        url: "/dashboard/overview",
         icon: LayoutDashboard,
       },
-      {
-        name: "Profile",
-        icon: LayoutDashboard,
-      },
-      {
-        name: "Task",
-        icon: LayoutDashboard,
-        children: menuItems.dashboard,
-      },
-      {
-        name: "Forms",
-        icon: LayoutDashboard,
-        children: menuItems.support,
-      },
-      {
-        name: "Tables",
-        icon: LayoutDashboard,
-        children: menuItems.support,
-      },
-      {
-        name: "Pages",
-        icon: LayoutDashboard,
-        children: menuItems.support,
-      },
+    ],
+  },
+  {
+    label: "Animals",
+    name: "animals",
+    children: [
+      { name: "View All", url: "/animals", icon: Cat },
+      { name: "Add New", url: "/animals/add", icon: PlusSquare },
+    ],
+  },
+  {
+    label: "Sales",
+    name: "sales",
+    children: [
+      { name: "View All", url: "/sales", icon: ShoppingCart },
+      { name: "Add Sale", url: "/sales/add", icon: PlusSquare },
+    ],
+  },
+  {
+    label: "Income",
+    name: "income",
+    children: [
+      { name: "View All", url: "/income", icon: DollarSign },
+      { name: "Add Income", url: "/income/add", icon: PlusSquare },
+    ],
+  },
+  {
+    label: "Expenses",
+    name: "expenses",
+    children: [
+      { name: "View All", url: "/expense", icon: Package },
+      { name: "Add Expense", url: "/expense/add", icon: PlusSquare },
+    ],
+  },
+  {
+    label: "Feed Management",
+    name: "feed-management",
+    children: [
+      { name: "Schedules", url: "/feed/schedules", icon: ClipboardList },
+      { name: "Inventory", url: "/feed/inventory", icon: Package },
+    ],
+  },
+  {
+    label: "Health",
+    name: "health",
+    children: [
+      { name: "Records", url: "/health/records", icon: Heart },
+      { name: "Add Record", url: "/health/add", icon: PlusSquare },
     ],
   },
 ];

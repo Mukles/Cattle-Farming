@@ -18,9 +18,14 @@ model Animal {
   feedSchedules FeedSchedule[] // one-to-many relationship with FeedSchedule
   breeding      Breeding?      // one-to-one relationship with Breeding
   sale          Sale?          // one-to-one relationship with Sale
+  isPurchased   Boolean        @default(false) // Indicates if the animal was purchased
+  purchaseDate  DateTime?      // Nullable, only applicable if isPurchased = true
+  purchasePrice Float?         // Nullable, purchase price
+  seller        String?        // Nullable, seller/market name
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
+
 
 model HealthRecord {
   id           Int      @id @default(autoincrement())

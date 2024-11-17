@@ -9,7 +9,7 @@ import Link from "next/link";
 import { sidebarMenu } from "./data/menu";
 export default function Sidebar({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="h-full overflow-auto px-5 pt-8 relative">
+    <div className="h-full overflow-auto px-5 pt-8 sticky left-0 top-0">
       <div className="mb-7">
         <h2>Cattle Mangement</h2>
       </div>
@@ -24,22 +24,28 @@ export default function Sidebar({ children }: { children?: React.ReactNode }) {
               <Accordion type="single" collapsible className="w-full">
                 {menu.children.map((menu) => {
                   const Icon = menu.icon!;
+                  const hasChildren = menu.children?.length! > 0;
+                  const Tag = hasChildren ? "div" : Link;
+
                   return (
                     <AccordionItem
                       key={menu.name}
-                      disabled={!menu.children?.length}
+                      disabled={hasChildren}
                       value={menu.name}
                       className="border-b-0"
                     >
                       <AccordionTrigger
                         className={cn(
                           "text-primary hover:no-underline font-medium py-2 px-3 text-sm",
-                          !menu.children?.length && "[&>svg]:hidden"
+                          !hasChildren && "[&>svg]:hidden relative"
                         )}
                       >
                         <>
+                          {menu.url && (
+                            <Link href={menu.url} className="stretched-link" />
+                          )}
                           <span>
-                            <Icon className="size-6 mr-3" />
+                            <Icon className="size-6 mr-3 text-foreground" />
                           </span>
                           <span className="text-foreground flex-1 text-left">
                             {menu.name}
