@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
       <div className="w-full">
-        <main>{children}</main>
+        <main className="p-6">{children}</main>
       </div>
     </div>
   );
