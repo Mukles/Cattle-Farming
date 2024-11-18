@@ -4,6 +4,7 @@
 @tailwind utilities;
 
 @layer base {
+  @include meta.load-css("variables.scss");
   @include meta.load-css("base.scss");
 }
 
@@ -15,4 +16,13 @@
 
 @layer utilities {
   @include meta.load-css("utilities.scss");
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
