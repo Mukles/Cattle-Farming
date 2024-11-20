@@ -3,15 +3,15 @@ import { z } from "zod";
 export const animalSchema = z.object({
   name: z.string().min(1, "Animal name is required"),
   breed: z.string().min(1, "Breed is required"),
-  age: z
+  age: z.coerce
     .number()
     .min(0, "Age must be a positive number")
     .max(30, "Age is too high"),
-  weight: z.number().min(1, "Weight must be a positive number"),
+  weight: z.coerce.number().min(1, "Weight must be a positive number"),
   healthStatus: z.enum(["Healthy", "Sick", "Under Treatment"]),
-  isPurchased: z.boolean(),
-  purchaseDate: z.string().optional(),
-  purchasePrice: z
+  isPurchased: z.coerce.boolean(),
+  purchaseDate: z.coerce.date(),
+  purchasePrice: z.coerce
     .number()
     .min(1, "Purchase price must be a positive number")
     .optional(),

@@ -1,3 +1,5 @@
+"use server";
+
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -17,7 +19,8 @@ export type Result<T> =
         message: string;
         details?: Record<string, any>;
       } | null;
-    };
+    }
+  | null;
 
 function formatZodErrors(error: z.ZodError): Record<string, string> {
   return Object.fromEntries(

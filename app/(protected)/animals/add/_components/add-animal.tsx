@@ -2,7 +2,6 @@
 
 import { addAnimalAction } from "@/actions/animals";
 import { Animal } from "@/actions/animals/type";
-import { Result } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,37 +34,29 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useActionState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
-const initialState: Result<Animal> = {
-  success: false,
-  error: null,
+const defaultValues: Animal = {
+  name: "",
+  age: 0,
+  breed: "",
+  isPurchased: false,
+  purchaseDate: new Date(),
+  seller: "",
+  weight: 0,
+  healthStatus: "Healthy",
+  purchasePrice: 0,
 };
 
 function AddAnimalForm() {
-  const addAnimalForm = useForm<z.infer<typeof animalSchema>>({
+  const addAnimalForm = useForm<Animal>({
     resolver: zodResolver(animalSchema),
-    defaultValues: {
-      name: "",
-      age: 0,
-      breed: "",
-      isPurchased: false,
-      purchaseDate: "",
-      seller: "",
-      weight: 0,
-      healthStatus: "Healthy",
-      purchasePrice: 0,
-    },
+    defaultValues,
   });
-
-  const [state, action, isPending] = useActionState(
-    addAnimalAction,
-    initialState
-  );
-
-  console.log({ state });
-
+  const [state, action, isPending] = useActionState(addAnimalAction, null);
   const isPurchased = addAnimalForm.watch("isPurchased");
+  if (isPending) {
+    console.log({ isPending });
+  }
 
   return (
     <div className="flex items-center justify-center p-4">
@@ -75,7 +66,9 @@ function AddAnimalForm() {
         </h2>
         <Form {...addAnimalForm}>
           <form
-            onSubmit={addAnimalForm.handleSubmit((data) => console.log(data))}
+            onSubmit={addAnimalForm.handleSubmit((data) => {
+              action(data);
+            })}
             className="space-y-4"
           >
             <FormField
@@ -112,7 +105,7 @@ function AddAnimalForm() {
                 <FormItem>
                   <FormLabel>Age (in years)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter Age" {...field} />
+                    <Input type="number" placeholder="Enter Age" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -126,7 +119,11 @@ function AddAnimalForm() {
                 <FormItem>
                   <FormLabel>Weight (in kg)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter weight" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Enter weight"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -190,7 +187,7 @@ function AddAnimalForm() {
                     return (
                       <FormItem>
                         <FormControl>
-                          <>
+                          <div>
                             <Popover>
                               <PopoverTrigger asChild>
                                 <Button
@@ -221,7 +218,7 @@ function AddAnimalForm() {
                                 />
                               </PopoverContent>
                             </Popover>
-                          </>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -236,7 +233,11 @@ function AddAnimalForm() {
                     <FormItem>
                       <FormLabel>Purchase Price</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter Price" {...field} />
+                        <Input
+                          type="number"
+                          placeholder="Enter Price"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -262,18 +263,12 @@ function AddAnimalForm() {
               </>
             )}
             <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-sm hover:bg-gray-300"
-              >
+              <Button variant={"outline"} type="button">
                 Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600"
-              >
+              </Button>
+              <Button disabled={isPending} type="submit">
                 Add Animal
-              </button>
+              </Button>
             </div>
           </form>
         </Form>

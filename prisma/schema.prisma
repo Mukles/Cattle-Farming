@@ -8,82 +8,89 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum HealthStatus {
+  Healthy
+  Sick
+  UnderTreatment
+}
+
 model Animal {
-  id            Int           @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   name          String
   breed         String
   age           Int
+  weight        Float
+  healthStatus  HealthStatus
   healthRecords HealthRecord[] // one-to-many relationship with HealthRecord
-  expenses      Expense[]      // one-to-many relationship with Expense
+  expenses      Expense[] // one-to-many relationship with Expense
   feedSchedules FeedSchedule[] // one-to-many relationship with FeedSchedule
-  breeding      Breeding?      // one-to-one relationship with Breeding
-  sale          Sale?          // one-to-one relationship with Sale
+  breeding      Breeding? // one-to-one relationship with Breeding
+  sale          Sale? // one-to-one relationship with Sale
   isPurchased   Boolean        @default(false) // Indicates if the animal was purchased
-  purchaseDate  DateTime?      // Nullable, only applicable if isPurchased = true
-  purchasePrice Float?         // Nullable, purchase price
-  seller        String?        // Nullable, seller/market name
+  purchaseDate  DateTime? // Nullable, only applicable if isPurchased = true
+  purchasePrice Float? // Nullable, purchase price
+  seller        String? // Nullable, seller/market name
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
 
-
 model HealthRecord {
-  id           Int      @id @default(autoincrement())
-  animalId     Int
-  animal       Animal   @relation(fields: [animalId], references: [id])
-  date         DateTime
-  description  String
-  treatment    String
-  nextCheckup  DateTime?
+  id          Int       @id @default(autoincrement())
+  animalId    Int
+  animal      Animal    @relation(fields: [animalId], references: [id])
+  date        DateTime
+  description String
+  treatment   String
+  nextCheckup DateTime?
 }
 
 model Expense {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   animalId    Int?
-  animal      Animal?  @relation(fields: [animalId], references: [id])
+  animal      Animal?     @relation(fields: [animalId], references: [id])
   type        ExpenseType
   amount      Float
   description String
-  date        DateTime  @default(now())
+  date        DateTime    @default(now())
 }
 
 model FeedSchedule {
-  id          Int      @id @default(autoincrement())
-  animalId    Int?
-  animal      Animal?  @relation(fields: [animalId], references: [id])
-  feedType    String
-  quantity    Float
-  frequency   FeedFrequency
-  nextFeed    DateTime
+  id        Int           @id @default(autoincrement())
+  animalId  Int?
+  animal    Animal?       @relation(fields: [animalId], references: [id])
+  feedType  String
+  quantity  Float
+  frequency FeedFrequency
+  nextFeed  DateTime
 }
 
 model Breeding {
-  id           Int      @id @default(autoincrement())
-  animalId     Int      @unique
-  animal       Animal   @relation(fields: [animalId], references: [id])
+  id           Int            @id @default(autoincrement())
+  animalId     Int            @unique
+  animal       Animal         @relation(fields: [animalId], references: [id])
   breedingDate DateTime
   dueDate      DateTime?
   status       BreedingStatus
 }
 
 model Sale {
-  id          Int       @id @default(autoincrement())
-  animalId    Int       @unique
-  animal      Animal    @relation(fields: [animalId], references: [id])
-  buyerName   String
+  id           Int      @id @default(autoincrement())
+  animalId     Int      @unique
+  animal       Animal   @relation(fields: [animalId], references: [id])
+  buyerName    String
   buyerContact String
-  saleDate    DateTime  @default(now())
-  salePrice   Float
+  saleDate     DateTime @default(now())
+  salePrice    Float
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
   description String
   status      TaskStatus
   dueDate     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 // Enum for task status
