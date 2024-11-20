@@ -1,5 +1,8 @@
 "use client";
 
+import { addAnimalAction } from "@/actions/animals";
+import { Animal } from "@/actions/animals/type";
+import { Result } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -30,8 +33,14 @@ import { animalSchema } from "@/lib/validation/animale";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+const initialState: Result<Animal> = {
+  success: false,
+  error: null,
+};
 
 function AddAnimalForm() {
   const addAnimalForm = useForm<z.infer<typeof animalSchema>>({
@@ -48,6 +57,13 @@ function AddAnimalForm() {
       purchasePrice: 0,
     },
   });
+
+  const [state, action, isPending] = useActionState(
+    addAnimalAction,
+    initialState
+  );
+
+  console.log({ state });
 
   const isPurchased = addAnimalForm.watch("isPurchased");
 
@@ -71,12 +87,10 @@ function AddAnimalForm() {
                   <FormControl>
                     <Input placeholder="Enter animal name" {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={addAnimalForm.control}
               name="breed"

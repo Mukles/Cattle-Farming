@@ -8,7 +8,7 @@ type ErrorType =
   | "FOREIGN_KEY_CONSTRAINT"
   | "SERVER_ERROR";
 
-type Result<T> =
+export type Result<T> =
   | { success: true; data: T }
   | {
       success: false;
@@ -16,7 +16,7 @@ type Result<T> =
         type: ErrorType;
         message: string;
         details?: Record<string, any>;
-      };
+      } | null;
     };
 
 function formatZodErrors(error: z.ZodError): Record<string, string> {

@@ -1,16 +1,14 @@
+import { Result, safeAction } from "@/actions/index";
+import { animalSchema } from "@/lib/validation/animale";
 import { z } from "zod";
-import { safeAction } from "..";
+import { Animal } from "./type";
 
-// Zod Schema for User Creation
-const UserCreateSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  age: z.number().min(18, "Must be at least 18"),
-});
-
-export async function createUser(userData: z.input<typeof UserCreateSchema>) {
+export const addAnimalAction = async (
+  state: Result<Animal>,
+  data: z.infer<typeof animalSchema>
+): Promise<Result<Animal>> => {
   return safeAction(async () => {
-    const validatedData = UserCreateSchema.parse(userData);
+    const validatedData = animalSchema.parse(data);
     return { success: true, data: validatedData };
   });
-}
+};
