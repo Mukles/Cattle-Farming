@@ -1,6 +1,7 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
+import "server-only";
 import { z } from "zod";
 
 type ErrorType =

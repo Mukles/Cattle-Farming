@@ -1,17 +1,9 @@
+import { Animal } from "@/app/actions/animals/type";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { DataTableColumnHeader } from "./data-table-column-header";
-
-export type Animal = {
-  id: number;
-  name: string;
-  breed: string;
-  age: number;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
 export const columns: ColumnDef<Animal>[] = [
   {

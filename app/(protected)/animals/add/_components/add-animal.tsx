@@ -36,15 +36,15 @@ import { useActionState } from "react";
 import { useForm } from "react-hook-form";
 
 const defaultValues: Animal = {
-  name: "",
-  age: 0,
-  breed: "",
-  isPurchased: false,
+  name: "animal",
+  age: 2,
+  breed: "sfg",
+  isPurchased: true,
   purchaseDate: new Date(),
-  seller: "",
-  weight: 0,
+  seller: "fasdf",
+  weight: 20,
   healthStatus: "Healthy",
-  purchasePrice: 0,
+  purchasePrice: 23423,
 };
 
 function AddAnimalForm() {
@@ -53,6 +53,7 @@ function AddAnimalForm() {
     defaultValues,
   });
   const [state, action, isPending] = useActionState(addAnimalAction, null);
+  console.log({ state });
   const isPurchased = addAnimalForm.watch("isPurchased");
   if (isPending) {
     console.log({ isPending });
@@ -65,12 +66,7 @@ function AddAnimalForm() {
           Add New Animal
         </h2>
         <Form {...addAnimalForm}>
-          <form
-            onSubmit={addAnimalForm.handleSubmit((data) => {
-              action(data);
-            })}
-            className="space-y-4"
-          >
+          <form action={action} className="space-y-4">
             <FormField
               control={addAnimalForm.control}
               name="name"
@@ -136,7 +132,11 @@ function AddAnimalForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select
+                      {...field}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Health Status" />
                       </SelectTrigger>
@@ -188,6 +188,11 @@ function AddAnimalForm() {
                       <FormItem>
                         <FormControl>
                           <div>
+                            <Input
+                              type="hidden"
+                              value={field.value}
+                              name={field.name}
+                            />
                             <Popover>
                               <PopoverTrigger asChild>
                                 <Button
@@ -207,6 +212,7 @@ function AddAnimalForm() {
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0">
                                 <Calendar
+                                  {...field}
                                   selected={
                                     field.value
                                       ? new Date(field.value)

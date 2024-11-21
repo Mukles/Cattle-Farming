@@ -1,3 +1,4 @@
+import { HealthStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const animalSchema = z.object({
@@ -8,15 +9,15 @@ export const animalSchema = z.object({
     .min(0, "Age must be a positive number")
     .max(30, "Age is too high"),
   weight: z.coerce.number().min(1, "Weight must be a positive number"),
-  healthStatus: z.enum(["Healthy", "Sick", "Under Treatment"]),
+  healthStatus: z.nativeEnum(HealthStatus),
   isPurchased: z.coerce.boolean(),
-  purchaseDate: z.coerce.date(),
+  purchaseDate: z.coerce.date().nullable(),
   purchasePrice: z.coerce
     .number()
     .min(1, "Purchase price must be a positive number")
-    .optional(),
+    .nullable(),
   seller: z
     .string()
     .min(1, "Seller/Market name is required when purchased")
-    .optional(),
+    .nullable(),
 });
