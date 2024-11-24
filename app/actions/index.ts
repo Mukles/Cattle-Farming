@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client";
 import "server-only";
 import { z } from "zod";
 
-type ErrorType =
+export type ErrorType =
   | "NOT_FOUND"
   | "VALIDATION_ERROR"
   | "UNIQUE_CONSTRAINT"

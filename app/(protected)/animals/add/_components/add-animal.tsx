@@ -5,6 +5,8 @@ import { Animal } from "@/actions/animals/type";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+
 import {
   Form,
   FormControl,
@@ -27,37 +29,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useMutation } from "@/hooks/use-mutation";
 import { cn } from "@/lib/utils";
 import { animalSchema } from "@/lib/validation/animale";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useActionState } from "react";
 import { useForm } from "react-hook-form";
 
 const defaultValues: Animal = {
-  name: "animal",
-  age: 2,
-  breed: "sfg",
-  isPurchased: true,
+  name: "",
+  age: 0,
+  breed: "",
+  isPurchased: false,
   purchaseDate: new Date(),
-  seller: "fasdf",
-  weight: 20,
+  seller: "",
+  weight: 0,
   healthStatus: "Healthy",
-  purchasePrice: 23423,
+  purchasePrice: 0,
 };
 
 function AddAnimalForm() {
+  const { toast } = useToast();
   const addAnimalForm = useForm<Animal>({
     resolver: zodResolver(animalSchema),
     defaultValues,
+    mode: "onChange",
   });
-  const [state, action, isPending] = useActionState(addAnimalAction, null);
-  console.log({ state });
+  const { action, isPending } = useMutation<Animal>(addAnimalAction, {
+    onError({ error }) {
+      if (error.type === "VALIDATION_ERROR") {
+        addAnimalForm.trigger();
+      }
+    },
+    onSuccess(result) {
+      addAnimalForm.reset();
+      toast({
+        title: "Success!",
+        description: "Animal added successfully.",
+      });
+    },
+  });
   const isPurchased = addAnimalForm.watch("isPurchased");
-  if (isPending) {
-    console.log({ isPending });
-  }
+  const isValid = !addAnimalForm.formState.isValid;
 
   return (
     <div className="flex items-center justify-center p-4">
@@ -190,7 +204,7 @@ function AddAnimalForm() {
                           <div>
                             <Input
                               type="hidden"
-                              value={field.value}
+                              value={field.value?.toISOString()}
                               name={field.name}
                             />
                             <Popover>
@@ -243,6 +257,7 @@ function AddAnimalForm() {
                           type="number"
                           placeholder="Enter Price"
                           {...field}
+                          value={field.value!}
                         />
                       </FormControl>
                       <FormMessage />
@@ -260,6 +275,7 @@ function AddAnimalForm() {
                         <Input
                           placeholder="Enter seller or market name"
                           {...field}
+                          value={field.value!}
                         />
                       </FormControl>
                       <FormMessage />
@@ -272,7 +288,7 @@ function AddAnimalForm() {
               <Button variant={"outline"} type="button">
                 Cancel
               </Button>
-              <Button disabled={isPending} type="submit">
+              <Button disabled={isPending || !isValid} type="submit">
                 Add Animal
               </Button>
             </div>
@@ -284,3 +300,5 @@ function AddAnimalForm() {
 }
 
 export default AddAnimalForm;
+
+//

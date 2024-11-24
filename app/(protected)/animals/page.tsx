@@ -4,7 +4,6 @@ import AnimalDataTable from "./_components/animal-data-table";
 
 export default async function AnimalePage() {
   const result = await getAnimales();
-
   if (result?.success === false) {
     return (
       <Card>
