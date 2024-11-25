@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const animalSchema = z
   .object({
+    id: z.number().int().optional(),
     name: z.string().min(1, "Animal name is required"),
     age: z.coerce
       .number()
