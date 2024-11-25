@@ -42,11 +42,11 @@ const defaultValues: Animal = {
   age: 0,
   breed: "",
   isPurchased: false,
-  purchaseDate: new Date(),
-  seller: "",
+  purchaseDate: null,
+  seller: null,
   weight: 0,
   healthStatus: "Healthy",
-  purchasePrice: 0,
+  purchasePrice: null,
 };
 
 function AddAnimalForm() {
@@ -56,11 +56,18 @@ function AddAnimalForm() {
     defaultValues,
     mode: "onChange",
   });
+
   const { action, isPending } = useMutation<Animal>(addAnimalAction, {
     onError({ error }) {
       if (error.type === "VALIDATION_ERROR") {
         addAnimalForm.trigger();
+        return;
       }
+
+      toast({
+        title: error.type,
+        description: error.message,
+      });
     },
     onSuccess(result) {
       addAnimalForm.reset();
@@ -71,7 +78,8 @@ function AddAnimalForm() {
     },
   });
   const isPurchased = addAnimalForm.watch("isPurchased");
-  const isValid = !addAnimalForm.formState.isValid;
+  const isValid = addAnimalForm.formState.isValid;
+  console.log({ data: addAnimalForm.getValues() });
 
   return (
     <div className="flex items-center justify-center p-4">
@@ -175,8 +183,9 @@ function AddAnimalForm() {
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                   <FormControl>
                     <Checkbox
-                      checked={field.value}
+                      checked={isPurchased}
                       onCheckedChange={field.onChange}
+                      name={field.name}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">

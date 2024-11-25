@@ -38,6 +38,7 @@ export async function safeAction<T>(
   try {
     return await fn();
   } catch (error: unknown) {
+    console.log(error);
     if (error instanceof z.ZodError) {
       return {
         success: false,

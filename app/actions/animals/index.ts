@@ -12,6 +12,7 @@ export const addAnimalAction = async (
 ): Promise<Result<Animal>> => {
   return safeAction(async () => {
     const data = Object.fromEntries(formData);
+    console.log(data);
     const validatedData = animalSchema.parse(data);
     const newAnimal = await prisma.animal.create({ data: validatedData });
     return { success: true, data: newAnimal };
