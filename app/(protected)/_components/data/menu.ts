@@ -7,6 +7,7 @@ import {
   Package,
   PlusSquare,
   ShoppingCart,
+  Tags,
 } from "lucide-react";
 
 // Define a type for the basic menu item structure
@@ -105,6 +106,14 @@ export const sidebarMenu: SidebarMenuItem[] = [
     children: [
       { name: "Schedules", url: "/feed/schedules", icon: ClipboardList },
       { name: "Inventory", url: "/feed/inventory", icon: Package },
+    ],
+  },
+  {
+    label: "Tags",
+    name: "tags",
+    children: [
+      { name: "View All", url: "/tags", icon: Tags },
+      { name: "Add Tag", url: "/tags/add", icon: PlusSquare },
     ],
   },
   {
