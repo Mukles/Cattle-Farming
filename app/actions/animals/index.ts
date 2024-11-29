@@ -2,7 +2,7 @@
 
 import { Result, safeAction } from "@/actions/index";
 import { prisma } from "@/lib/prisma";
-import { animalSchema } from "@/lib/validation/animale";
+import { animalSchema } from "@/lib/validation/animale.schema";
 import "server-only";
 import { Animal } from "./type";
 

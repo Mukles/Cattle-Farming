@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { expenseSchema } from "@/lib/validation/expense";
+import { expenseSchema } from "@/lib/validation/expense.schema";
 import { Result, safeAction } from "..";
 import { Expense } from "./type";
 

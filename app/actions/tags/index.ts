@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { tagSchema } from "@/lib/validation/tag";
+import { tagSchema } from "@/lib/validation/tag.schema";
 import { Result, safeAction } from "..";
 import { Tag } from "./type";
 

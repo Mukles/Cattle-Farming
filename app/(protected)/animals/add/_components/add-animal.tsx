@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/select";
 import { useMutation } from "@/hooks/use-mutation";
 import { cn } from "@/lib/utils";
-import { animalSchema } from "@/lib/validation/animale";
+import { animalSchema } from "@/lib/validation/animale.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";

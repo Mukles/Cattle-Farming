@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@/hooks/use-mutation";
-import { tagSchema } from "@/lib/validation/tag";
+import { tagSchema } from "@/lib/validation/tag.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
