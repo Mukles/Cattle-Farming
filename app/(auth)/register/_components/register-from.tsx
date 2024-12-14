@@ -14,28 +14,31 @@ import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-
-import { loginUser } from "@/app/actions/user";
-import { useMutation } from "@/hooks/use-mutation";
-import { loginUserSchema } from "@/lib/validation/user.schema";
-import Link from "next/link";
 import { z } from "zod";
 
-export default function LoginForm() {
+import { createUser } from "@/app/actions/user";
+import { useMutation } from "@/hooks/use-mutation";
+import { userSchema } from "@/lib/validation/user.schema";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+
+export default function RegisterForm() {
   const { toast } = useToast();
-  const loginUserForm = useForm<z.infer<typeof loginUserSchema>>({
-    resolver: zodResolver(loginUserSchema),
+  const registerUserForm = useForm<z.infer<typeof userSchema>>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
+      firstName: "Mukles",
+      lastName: "Ali",
+      image: "",
       email: "mukles.themefisher@gmail.com",
       password: "Kitkat124$",
     },
   });
 
-  // @ts-ignore
-  const { action, isPending, state } = useMutation<unkonwn>(loginUser, {
+  const { action, isPending } = useMutation(createUser, {
     onError({ error }) {
       if (error.type === "VALIDATION_ERROR") {
-        loginUserForm.trigger();
+        registerUserForm.trigger();
         return;
       }
       toast({
@@ -44,19 +47,54 @@ export default function LoginForm() {
       });
     },
     onSuccess(result) {
-      loginUserForm.reset();
+      registerUserForm.reset();
       toast({
         title: "Success!",
-        description: "User logged in successfully.",
+        description: "User register in successfully.",
+      });
+
+      signIn("credentials", {
+        email: registerUserForm.getValues("email"),
+        password: registerUserForm.getValues("password"),
       });
     },
   });
 
   return (
-    <Form {...loginUserForm}>
+    <Form {...registerUserForm}>
       <form className="space-y-6" action={action}>
         <FormField
-          control={loginUserForm.control}
+          control={registerUserForm.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>First name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your first name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={registerUserForm.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter your last name"
+                  {...field}
+                  value={field.value!}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={registerUserForm.control}
           name="email"
           render={({ field }) => (
             <FormItem>
@@ -69,7 +107,7 @@ export default function LoginForm() {
           )}
         />
         <FormField
-          control={loginUserForm.control}
+          control={registerUserForm.control}
           name="password"
           render={({ field }) => (
             <FormItem>
@@ -85,23 +123,17 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <div className="text-right text-sm">
-          <Link href="#" className="text-primary hover:underline font-medium">
-            Forgot your password?
-          </Link>
-        </div>
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Sign In
         </Button>
-
         <p className="text-sm text-muted-foreground">
-          Don't have an account?
+          Already have an account?{" "}
           <Link
-            className="text-primary hover:underline font-medium"
-            href="/register"
+            href="/login"
+            className="underline underline-offset-4 hover:text-primary"
           >
-            Create account
+            Sign Up
           </Link>
         </p>
       </form>

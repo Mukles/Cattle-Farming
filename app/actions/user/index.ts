@@ -3,28 +3,50 @@ import "server-only";
 
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { userSchema } from "@/lib/validation/user.schema";
-import { isRedirectError } from "next/dist/client/components/redirect";
-import { redirect } from "next/navigation";
+import {
+  loginUserSchema,
+  updateUserSchema,
+  userSchema,
+} from "@/lib/validation/user.schema";
+import bcryptjs from "bcryptjs";
 import { Result, safeAction } from "..";
 import { User } from "./type";
 
-export const loginUser = async (state: Result<User>, formData: FormData) => {
-  return safeAction(async () => {
+export const createUser = async (state: Result<User>, formData: FormData) => {
+  return safeAction<User>(async () => {
     const data = Object.fromEntries(formData);
     const validatedData = userSchema.parse(data);
+    const existingUser = await prisma.user.findUnique({
+      where: { email: validatedData.email },
+    });
 
-    try {
-      return await signIn("credentials", {
-        email: validatedData.email,
-        password: validatedData.password,
-        redirectTo: "/",
-      });
-    } catch (err) {
-      if (isRedirectError(err)) {
-        redirect("/");
-      }
+    if (existingUser) {
+      throw new Error("User with this email already exists");
     }
+
+    const encryptedPassword = await bcryptjs.hash(validatedData.password, 10);
+    const user = await prisma.user.create({
+      data: {
+        image: validatedData.image,
+        email: validatedData.email,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        password: encryptedPassword,
+      },
+    });
+
+    return { ...user };
+  });
+};
+
+export const loginUser = async (state: Result<any>, formData: FormData) => {
+  return safeAction<any>(async () => {
+    const data = Object.fromEntries(formData);
+    const validatedData = loginUserSchema.parse(data);
+    await signIn("credentials", {
+      email: validatedData.email,
+      password: validatedData.password,
+    });
   });
 };
 
@@ -44,10 +66,29 @@ export const verifyUserWithPassword = async ({
       throw new Error("User not found");
     }
 
-    if (user.password !== password) {
+    const isValidPassword = await bcryptjs.compare(password, user.password);
+
+    if (!isValidPassword) {
       throw new Error("Invalid password");
     }
 
-    return { success: true, data: user };
+    return user;
+  });
+};
+
+export const updatUser = async (state: Result<User>, formData: FormData) => {
+  return safeAction<User>(async () => {
+    const data = Object.fromEntries(formData);
+    const validatedData = updateUserSchema.parse(data);
+    const user = await prisma.user.update({
+      where: {
+        id: data.id as string,
+      },
+      data: {
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+      },
+    });
+    return user;
   });
 };

@@ -40,6 +40,7 @@ interface SubMenuItem {
 
 // Dashboard Menu
 export const dashboardMenu: DashboardMenuItem[] = [
+  { name: "Profile Setting", url: "/profile" },
   { name: "Overview", url: "/dashboard/overview" },
 ];
 
