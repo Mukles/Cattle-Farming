@@ -31,7 +31,7 @@ export function useMutation<T>(
       // @ts-ignore
       props.onError(state);
     }
-  }, [JSON.stringify(state)]);
+  }, [state]);
 
   return {
     action: action,

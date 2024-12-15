@@ -1,15 +1,7 @@
 "use client";
 
-import { User } from "@/app/actions/user/type";
-import { Card } from "@/components/ui/card";
-import { AcceptImages, MAXSIZE } from "@/lib/constant";
-
-import {
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { updatUser } from "@/actions/user";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -19,145 +11,122 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { userSchema } from "@/lib/validation/user.schema";
+import useDeepCompare from "@/hooks/use-deep-compare";
+import { useMutation } from "@/hooks/use-mutation";
+import { useToast } from "@/hooks/use-toast";
+import { updateUserSchema } from "@/lib/validation/user.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useState } from "react";
-import { FileRejection, useDropzone } from "react-dropzone";
+import { SaveIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { ProfileImageUpload } from "./_components/profile-image-upload";
 
-export default function Profile() {
-  const [previewImage, setPreviewImage] = useState<string | null>(null); // State for image preview
-  const updateUserForm = useForm<User>({
-    resolver: zodResolver(userSchema),
+export default function ProfileForm() {
+  const { toast } = useToast();
+  const { data: session, status } = useSession();
+  const { user } = session || {};
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const form = useForm<z.infer<typeof updateUserSchema>>({
+    resolver: zodResolver(updateUserSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      firstName: "",
-      lastName: "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
       image: "",
     },
   });
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[], fileRejections: FileRejection[]) => {
-      acceptedFiles.forEach((file) => {
-        const reader = new FileReader();
+  useEffect(() => {
+    if (status === "authenticated") {
+      form.setValue("firstName", user?.firstName || "");
+      form.setValue("lastName", user?.lastName || "");
+      form.setValue("image", user?.image || "");
+    }
+  }, [status]);
 
-        reader.onload = () => {
-          if (reader.readyState === 2) {
-            setPreviewImage(reader.result as string); // Set the preview image
-          }
-        };
+  const isChanged = useDeepCompare({
+    firstName: form.getValues("firstName"),
+    lastName: form.getValues("lastName"),
+  });
 
-        reader.readAsDataURL(file);
+  const { action, isPending, state } = useMutation(updatUser, {
+    onSuccess() {
+      toast({
+        title: "Success!",
+        description: "User updated successfully.",
       });
     },
-    []
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: AcceptImages,
-    maxSize: MAXSIZE,
-    onDrop,
+    onError({ error }) {
+      if (error.type === "VALIDATION_ERROR") {
+        form.trigger();
+        return;
+      }
+      toast({
+        title: error.type,
+        description: error.message,
+      });
+    },
   });
 
   return (
-    <Card className="max-w-lg mx-auto">
-      <CardHeader>
-        <CardTitle>Account settings</CardTitle>
-        <CardDescription>
-          Manage your profile, security, payment and notification settings.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...updateUserForm}>
-          <form className="space-y-4">
-            {/* Image Upload Field */}
+    <div className="max-w-md mx-auto border p-5 rounded-md">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(() => {})} className="space-y-6">
+          <div className="space-y-6">
             <FormField
-              control={updateUserForm.control}
+              control={form.control}
               name="image"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Profile Image</FormLabel>
-                  <FormControl>
-                    <>
-                      <div
-                        {...getRootProps()}
-                        className="border-dashed border-2 px-4 text-center cursor-pointer rounded py-8"
-                      >
-                        <input {...getInputProps()} />
-                        {isDragActive ? (
-                          <p>Drop the image file here...</p>
-                        ) : (
-                          <p>
-                            Drag & drop your image here, or click to select
-                            files
-                          </p>
-                        )}
-                      </div>
-                      {previewImage && (
-                        <div className="mt-4">
-                          <img
-                            src={previewImage}
-                            alt="Preview"
-                            className="max-w-full h-auto rounded shadow"
-                          />
-                        </div>
-                      )}
-                    </>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <ProfileImageUpload
+                  previewImage={previewImage}
+                  setPreviewImage={setPreviewImage}
+                  field={field}
+                />
               )}
             />
 
-            {/* First Name Field */}
             <FormField
-              control={updateUserForm.control}
+              control={form.control}
               name="firstName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input placeholder="John" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Last Name Field */}
             <FormField
-              control={updateUserForm.control}
+              control={form.control}
               name="lastName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input placeholder="Doe" {...field} value={field.value!} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
 
-            {/* Email Field */}
-            <FormField
-              control={updateUserForm.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+          <Button
+            disabled={isChanged || isPending}
+            type="submit"
+            size="lg"
+            className="w-full"
+          >
+            <SaveIcon className="mr-2 h-4 w-4" />
+            Save changes
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 import { createTagAction } from "@/app/actions/tags";
-import { Tag } from "@/app/actions/tags/type";
 import {
   Form,
   FormControl,
@@ -15,44 +14,45 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@/hooks/use-mutation";
-import { tagSchema } from "@/lib/validation/tag.schema";
+import { updateTagSchema } from "@/lib/validation/tag.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "next-auth";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const defaultValues: Tag = {
-  createdBy: "",
-  id: 0,
-  title: "",
-};
-
-function AddTagForm() {
+function AddTagForm({ user }: { user: User }) {
   const { toast } = useToast();
-  const addTagForm = useForm<Tag>({
-    resolver: zodResolver(tagSchema),
-    defaultValues,
+  const addTagForm = useForm<z.infer<typeof updateTagSchema>>({
+    resolver: zodResolver(updateTagSchema),
+    defaultValues: {
+      title: "",
+      createdBy: user?.id,
+    },
     mode: "onChange",
   });
 
-  const { action, isPending } = useMutation<Tag>(createTagAction, {
-    onError({ error }) {
-      if (error.type === "VALIDATION_ERROR") {
-        addTagForm.trigger();
-        return;
-      }
-
-      toast({
-        title: error.type,
-        description: error.message,
-      });
-    },
-    onSuccess(result) {
-      addTagForm.reset();
-      toast({
-        title: "Success!",
-        description: "Animal added successfully.",
-      });
-    },
-  });
+  const { action, isPending } = useMutation<z.infer<typeof updateTagSchema>>(
+    createTagAction,
+    {
+      onError({ error }) {
+        if (error.type === "VALIDATION_ERROR") {
+          addTagForm.trigger();
+          return;
+        }
+        toast({
+          title: error.type,
+          description: error.message,
+        });
+      },
+      onSuccess(result) {
+        addTagForm.reset();
+        toast({
+          title: "Success!",
+          description: "Animal added successfully.",
+        });
+      },
+    }
+  );
 
   return (
     <div className="flex items-center justify-center p-4">
@@ -75,11 +75,27 @@ function AddTagForm() {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={addTagForm.control}
+              name="createdBy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input type="hidden" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="flex justify-end space-x-4">
               <Button variant={"outline"} type="button">
                 Cancel
               </Button>
-              <Button disabled={isPending} type="submit">
+              <Button
+                disabled={!addTagForm.formState.isValid || isPending}
+                type="submit"
+              >
                 Add Tag
               </Button>
             </div>

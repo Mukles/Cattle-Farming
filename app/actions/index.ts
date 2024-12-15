@@ -1,15 +1,23 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
+import { CredentialsSignin } from "next-auth";
+import { isRedirectError } from "next/dist/client/components/redirect";
+import { redirect } from "next/navigation";
 import "server-only";
 import { z } from "zod";
+
+export type ExtractVariables<T> = T extends { variables: object }
+  ? T["variables"]
+  : never;
 
 export type ErrorType =
   | "NOT_FOUND"
   | "VALIDATION_ERROR"
   | "UNIQUE_CONSTRAINT"
   | "FOREIGN_KEY_CONSTRAINT"
-  | "SERVER_ERROR";
+  | "SERVER_ERROR"
+  | "AUTH_ERROR";
 
 export type Result<T> =
   | { success: true; data: T }
@@ -32,12 +40,18 @@ function formatZodErrors(error: z.ZodError): Record<string, string> {
   );
 }
 
-export async function safeAction<T>(
-  fn: () => Promise<Result<T>>
-): Promise<Result<T>> {
+export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
   try {
-    return await fn();
+    const response = await fn();
+    return {
+      data: response,
+      success: true,
+    };
   } catch (error: unknown) {
+    console.log({ error });
+    if (isRedirectError(error)) {
+      redirect("/");
+    }
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -81,18 +95,43 @@ export async function safeAction<T>(
       }
     }
 
+    if (error instanceof CredentialsSignin) {
+      return {
+        success: false,
+        error: {
+          type: "AUTH_ERROR",
+          message: error.message.substring(
+            0,
+            error.message.indexOf(". Read more")
+          ),
+          details: {
+            originalError: "Unknown error occurred",
+          },
+        },
+      };
+    }
+
+    if (error instanceof Error) {
+      console.log(error);
+      return {
+        error: {
+          type: "SERVER_ERROR",
+          message: error.message,
+          details: {
+            originalError: error.stack,
+          },
+        },
+        success: false,
+      };
+    }
+
     return {
       success: false,
       error: {
         type: "SERVER_ERROR",
         message: "Unexpected database error",
         details: {
-          originalError:
-            error instanceof Error
-              ? error.message
-              : typeof error === "string"
-              ? error
-              : "Unknown error occurred",
+          originalError: "Unknown error occurred",
         },
       },
     };

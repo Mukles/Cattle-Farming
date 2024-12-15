@@ -1,4 +1,5 @@
 import { SessionProvider } from "next-auth/react";
+import Header from "./_components/header";
 import Sidebar from "./_components/sidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -11,6 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </aside>
         <div className="w-full">
+          <Header />
           <main className="p-6">{children}</main>
         </div>
       </div>

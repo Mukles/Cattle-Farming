@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/main.scss";
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import { Inter, Outfit } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-secondary" });
@@ -21,13 +22,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning={true}
         className={`${inter.variable} ${roboto.variable} antialiased`}
       >
-        {children}
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme={"light"}
+          enableColorScheme={false}
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

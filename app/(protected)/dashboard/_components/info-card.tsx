@@ -2,7 +2,8 @@ import { Badge, BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ArrowDown, LucideProps } from "lucide-react";
+import { ArrowDown } from "lucide-react";
+import React from "react";
 
 export default function InfoCard({
   title,
@@ -16,7 +17,7 @@ export default function InfoCard({
   amount: string;
   ratings: string;
   varients: BadgeProps["variant"];
-  icon: LucideProps;
+  icon: React.ReactElement;
   className?: string;
 }) {
   return (
@@ -26,7 +27,7 @@ export default function InfoCard({
         variant={"outline"}
         size={"icon"}
       >
-        {icon}
+        {icon}{" "}
       </Button>
       <p className="mb-2 text-secondary-foreground">{title}</p>
       <div className="flex justify-between items-end">
