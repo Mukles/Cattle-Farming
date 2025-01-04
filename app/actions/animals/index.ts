@@ -14,13 +14,13 @@ export const addAnimalAction = async (
     const data = Object.fromEntries(formData);
     const validatedData = animalSchema.parse(data);
     const newAnimal = await prisma.animal.create({ data: validatedData });
-    return { success: true, data: newAnimal };
+    return newAnimal;
   });
 };
 
 export const getAnimales = async (): Promise<Result<Animal[]>> => {
   return safeAction(async () => {
     const animals = await prisma.animal.findMany();
-    return { success: true, data: animals };
+    return animals;
   });
 };

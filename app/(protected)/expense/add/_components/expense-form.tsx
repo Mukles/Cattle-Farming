@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Expense } from "@/actions/expense/type";
 import { Animal } from "@/app/actions/animals/type";
 import { addExpenseAction } from "@/app/actions/expense";
+import { Tag } from "@/app/actions/tags/type";
 import {
   Form,
   FormControl,
@@ -42,15 +43,25 @@ import { useForm } from "react-hook-form";
 const defaultValues: Expense = {
   date: new Date(),
   description: "",
+  // @ts-ignore
   amount: "",
+  // @ts-ignore
+  type: "",
+  animalId: "",
 };
 
-export default function AddExpenseForm({ animales }: { animales: Animal[] }) {
+export default function AddExpenseForm({
+  animales,
+  tags,
+}: {
+  animales: Animal[];
+  tags: Tag[];
+}) {
   const { toast } = useToast();
   const addExpenseForm = useForm<Expense>({
     resolver: zodResolver(expenseSchema),
-    defaultValues,
     mode: "onChange",
+    defaultValues: defaultValues,
   });
 
   const { action, isPending } = useMutation<Expense>(addExpenseAction, {
@@ -73,6 +84,7 @@ export default function AddExpenseForm({ animales }: { animales: Animal[] }) {
       });
     },
   });
+
   const isValid = addExpenseForm.formState.isValid;
 
   return (
@@ -94,19 +106,20 @@ export default function AddExpenseForm({ animales }: { animales: Animal[] }) {
                         <SelectValue placeholder="Select an animal" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Animals</SelectLabel>
-                          {animales.map((animale) => {
+                        {animales.length === 0 ? (
+                          <SelectItem value="0">No animals found</SelectItem>
+                        ) : (
+                          animales.map((animale) => {
                             return (
                               <SelectItem
                                 key={animale.id}
-                                value={animale.id?.toString()}
+                                value={animale.id!.toString()}
                               >
                                 {animale.name}
                               </SelectItem>
                             );
-                          })}
-                        </SelectGroup>
+                          })
+                        )}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -121,18 +134,27 @@ export default function AddExpenseForm({ animales }: { animales: Animal[] }) {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Select {...field}>
+                    <Select
+                      {...field}
+                      value={field.value.toString()}
+                      onValueChange={field.onChange}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select an expense type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Expense Types</SelectLabel>
-                          <SelectItem value="apple">Apple</SelectItem>
-                          <SelectItem value="banana">Banana</SelectItem>
-                          <SelectItem value="blueberry">Blueberry</SelectItem>
-                          <SelectItem value="grapes">Grapes</SelectItem>
-                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                          {tags.map((tag) => {
+                            return (
+                              <SelectItem
+                                key={tag.id}
+                                value={tag.id.toString()}
+                              >
+                                {tag.title}
+                              </SelectItem>
+                            );
+                          })}
                         </SelectGroup>
                       </SelectContent>
                     </Select>

@@ -84,7 +84,7 @@ function AddAnimalForm() {
   return (
     <div className="flex items-center justify-center p-4">
       <div className="max-w-lg w-full rounded-lg p-6">
-        <h2 className="text-2xl font-semibold text-gray-700 text-center mb-4">
+        <h2 className="text-2xl font-semibold text-center mb-4">
           Add New Animal
         </h2>
         <Form {...addAnimalForm}>

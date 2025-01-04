@@ -31,28 +31,25 @@ function AddTagForm({ user }: { user: User }) {
     mode: "onChange",
   });
 
-  const { action, isPending } = useMutation<z.infer<typeof updateTagSchema>>(
-    createTagAction,
-    {
-      onError({ error }) {
-        if (error.type === "VALIDATION_ERROR") {
-          addTagForm.trigger();
-          return;
-        }
-        toast({
-          title: error.type,
-          description: error.message,
-        });
-      },
-      onSuccess(result) {
-        addTagForm.reset();
-        toast({
-          title: "Success!",
-          description: "Animal added successfully.",
-        });
-      },
-    }
-  );
+  const { action, isPending } = useMutation(createTagAction, {
+    onError({ error }) {
+      if (error.type === "VALIDATION_ERROR") {
+        addTagForm.trigger();
+        return;
+      }
+      toast({
+        title: error.type,
+        description: error.message,
+      });
+    },
+    onSuccess(result) {
+      addTagForm.reset();
+      toast({
+        title: "Success!",
+        description: "Animal added successfully.",
+      });
+    },
+  });
 
   return (
     <div className="flex items-center justify-center p-4">

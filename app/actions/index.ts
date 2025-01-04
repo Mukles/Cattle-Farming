@@ -48,7 +48,6 @@ export async function safeAction<T>(fn: () => Promise<T>): Promise<Result<T>> {
       success: true,
     };
   } catch (error: unknown) {
-    console.log({ error });
     if (isRedirectError(error)) {
       redirect("/");
     }

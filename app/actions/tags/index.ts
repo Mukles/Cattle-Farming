@@ -18,6 +18,7 @@ export const createTagAction = async (
         createdBy: validatedData.createdBy,
       },
     });
+
     return newTag;
   });
 };

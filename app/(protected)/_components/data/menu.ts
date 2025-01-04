@@ -1,6 +1,7 @@
 import {
   Cat,
   ClipboardList,
+  Dog,
   DollarSign,
   Heart,
   LayoutDashboard,
@@ -75,6 +76,18 @@ export const sidebarMenu: SidebarMenuItem[] = [
     children: [
       { name: "View All", url: "/animals", icon: Cat },
       { name: "Add New", url: "/animals/add", icon: PlusSquare },
+    ],
+  },
+  {
+    label: "Breed",
+    name: "breed",
+    children: [
+      { name: "Breed", url: "/animals/breed", icon: Dog },
+      {
+        name: "Add Breed",
+        url: "animals/breed/add",
+        icon: PlusSquare,
+      },
     ],
   },
   {

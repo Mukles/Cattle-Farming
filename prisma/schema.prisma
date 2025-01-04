@@ -8,12 +8,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum HealthStatus {
-  Healthy
-  Sick
-  UnderTreatment
-}
-
 model User {
   id        String  @id @default(cuid())
   image     String?
@@ -25,23 +19,41 @@ model User {
 }
 
 model Animal {
-  id            Int            @id @default(autoincrement())
-  name          String
-  breed         String
-  age           Int
-  weight        Float
-  healthStatus  HealthStatus
-  healthRecords HealthRecord[] // one-to-many relationship with HealthRecord
-  expenses      Expense[] // one-to-many relationship with Expense
-  feedSchedules FeedSchedule[] // one-to-many relationship with FeedSchedule
-  breeding      Breeding? // one-to-one relationship with Breeding
-  sale          Sale? // one-to-one relationship with Sale
-  isPurchased   Boolean        @default(false) // Indicates if the animal was purchased
-  purchaseDate  DateTime? // Nullable, only applicable if isPurchased = true
-  purchasePrice Float? // Nullable, purchase price
-  seller        String? // Nullable, seller/market name
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                Int            @id @default(autoincrement())
+  name              String
+  breed             String
+  species           String
+  expectedSalePrice Float?
+  status            Status
+  age               Int
+  weight            Float
+  teeth             Int?
+  latestImage       String?
+  healthStatus      HealthStatus
+  healthRecords     HealthRecord[]
+  expenses          Expense[]
+  feedSchedules     FeedSchedule[]
+  breeding          Breeding?
+  comments          String?
+
+  //  Farm-Born Details
+  fatherInsemination FatherInsemination?
+  parentId           Int? // Foreign key to reference parent animal
+  parent             Animal?             @relation("ParentChild", fields: [id], references: [id])
+  children           Animal[]            @relation("ParentChild")
+  birthType          BirthType?          @default(SINGLE)
+
+  // Purchase Details
+  isPurchased   Boolean   @default(false)
+  purchaseDate  DateTime?
+  purchasePrice Float?
+  seller        String?
+  middleman     String?
+  purchaseImage String?
+
+  sale      Sale?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model HealthRecord {
@@ -55,13 +67,14 @@ model HealthRecord {
 }
 
 model Expense {
-  id          Int         @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   animalId    Int?
-  animal      Animal?     @relation(fields: [animalId], references: [id])
-  type        ExpenseType
+  animal      Animal?  @relation(fields: [animalId], references: [id])
+  type        Int
+  tag         Tag      @relation(fields: [type], references: [id])
   amount      Float
   description String
-  date        DateTime    @default(now())
+  date        DateTime @default(now())
 }
 
 model FeedSchedule {
@@ -104,12 +117,13 @@ model Task {
 }
 
 model Tag {
-  id        Int      @id @default(autoincrement())
-  title     String   @unique
+  id        Int       @id @default(autoincrement())
+  title     String    @unique
   createdBy String
-  user      User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  user      User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updateAt  DateTime  @updatedAt
+  Expense   Expense[]
 }
 
 // Enum for task status
@@ -139,4 +153,29 @@ enum FeedFrequency {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+enum HealthStatus {
+  HEALTHY
+  SICK
+  RECOVERING
+  INJURED
+}
+
+enum BirthType {
+  SINGLE // Single birth
+  TWIN // Twin birth
+  TRIPLE // Triple birth
+  OTHER // Any other birth type
+}
+
+enum FatherInsemination {
+  NATURAL // Natural insemination
+  ARTIFICIAL // Artificial insemination
+}
+
+enum Status {
+  ACTIVE
+  SOLD
+  DIED
 }

@@ -58,7 +58,6 @@ export async function POST(req: NextRequest) {
       autoCropUrl,
     });
   } catch (error) {
-    console.error("Upload error:", error);
     return NextResponse.json({ error: "File upload failed" }, { status: 500 });
   }
 }
