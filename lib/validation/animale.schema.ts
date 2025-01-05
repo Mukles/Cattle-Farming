@@ -14,7 +14,7 @@ export const animalSchema = z
       .min(0, "Age must be a positive number")
       .max(30, "Age is too high"),
     weight: z.coerce.number().min(1, "Weight must be a positive number"),
-    teeth: z.number().nullable().default(null),
+    teeth: z.coerce.number().default(0),
     latestImage: z.string().nullable().default(null),
     healthStatus: z.nativeEnum(HealthStatus), // Assuming `HealthStatus` is already imported or defined
     comments: z.string().nullable().default(null),
